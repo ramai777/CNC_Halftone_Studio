@@ -1,5 +1,6 @@
 import cv2
-import numpy as np
+
+from image_enhancer import ImageEnhancer
 
 
 class ImageProcessor:
@@ -7,6 +8,8 @@ class ImageProcessor:
     def __init__(self):
         self.image = None
         self.gray = None
+
+        self.enhancer = ImageEnhancer()
 
     def load(self, filename):
 
@@ -20,25 +23,8 @@ class ImageProcessor:
             cv2.COLOR_BGR2GRAY
         )
 
-        # Автоконтраст
-        gray = cv2.equalizeHist(gray)
-
-        # CLAHE - усиливает локальные детали
-        clahe = cv2.createCLAHE(
-            clipLimit=2.0,
-            tileGridSize=(8, 8)
-        )
-
-        gray = clahe.apply(gray)
-
-        # Небольшое размытие убирает шум
-        gray = cv2.GaussianBlur(
-            gray,
-            (3, 3),
-            0
-        )
-
-        self.gray = gray
+        # Вся обработка изображения теперь здесь
+        self.gray = self.enhancer.enhance(gray)
 
     def width(self):
         return self.gray.shape[1]
@@ -47,6 +33,10 @@ class ImageProcessor:
         return self.gray.shape[0]
 
     def brightness(self, x, y):
+
+        x = max(0, min(x, self.width() - 1))
+        y = max(0, min(y, self.height() - 1))
+
         return int(self.gray[y, x])
 
     def get_gray(self):
