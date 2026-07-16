@@ -1,21 +1,20 @@
-import math
+from geometry import Hole
+from geometry import diameter_to_depth
 
-from geometry import Hole, diameter_to_depth
 from hexgrid import HexGridGenerator
 from sampling import BrightnessSampler
+
+from calculations import brightness_to_diameter
+from config import Settings
 
 
 class HalftoneGenerator:
 
-    def __init__(
-        self,
-        min_diameter=1.0,
-        max_diameter=4.0,
-        bridge=2.5,
-    ):
-        self.min_diameter = min_diameter
-        self.max_diameter = max_diameter
-        self.bridge = bridge
+    def __init__(self, settings: Settings | None = None):
+
+        self.settings = settings or Settings()
+
+        self.grid = HexGridGenerator()
 
         self.holes = []
 
@@ -26,47 +25,44 @@ class HalftoneGenerator:
 
         self.clear()
 
-        width = processor.width()
-        height = processor.height()
+        sampler = BrightnessSampler(
+            processor.get_gray()
+        )
 
-        # Шаг между центрами отверстий
-        step = self.max_diameter + self.bridge
+        points = self.grid.generate(
+            processor.width(),
+            processor.height(),
+            self.settings.max_diameter,
+            self.settings.bridge,
+        )
 
-        row = 0
-        y = 0.0
+        for point in points:
 
-        while y < height:
+            brightness = sampler.sample(
+                point.x,
+                point.y,
+            )
 
-            if row % 2 == 0:
-                x = 0.0
-            else:
-                x = step / 2
+            diameter = brightness_to_diameter(
+                brightness,
+                self.settings.min_diameter,
+                self.settings.max_diameter,
+                self.settings.gamma,
+            )
 
-            while x < width:
+            depth = diameter_to_depth(
+                diameter,
+                self.settings.tip_diameter,
+            )
 
-                brightness = processor.brightness(int(x), int(y))
-
-                # 255 = белый
-                # 0 = черный
-
-                diameter = self.min_diameter + (
-                    brightness / 255
-                ) * (
-                    self.max_diameter - self.min_diameter
+            self.holes.append(
+                Hole(
+                    x=point.x,
+                    y=point.y,
+                    diameter=diameter,
+                    depth=depth,
+                    brightness=brightness,
                 )
-
-                self.holes.append(
-                    Hole(
-                        x=x,
-                        y=y,
-                        diameter=diameter,
-                        brightness=brightness,
-                    )
-                )
-
-                x += step
-
-            y += step * math.sqrt(3) / 2
-            row += 1
+            )
 
         return self.holes
