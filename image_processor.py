@@ -10,7 +10,11 @@ class ImageProcessor:
 
     def load(self, filename):
 
-        self.image = cv2.imread(filename)
+        import numpy as np
+
+        data = np.fromfile(filename, dtype=np.uint8)
+
+        self.image = cv2.imdecode(data, cv2.IMREAD_COLOR)
 
         if self.image is None:
             raise Exception("Не удалось открыть изображение")
