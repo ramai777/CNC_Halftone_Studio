@@ -40,6 +40,7 @@ class HalftoneGenerator:
             brightness = sampler.sample(
                 point.x,
                 point.y,
+                self.settings.max_diameter
             )
 
             diameter = brightness_to_diameter(

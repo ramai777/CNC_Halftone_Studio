@@ -4,50 +4,24 @@ import numpy as np
 
 class PreviewRenderer:
 
-    def render(
-        self,
-        processor,
-        holes,
-        show_background=False
-    ):
+    def render(self, processor, holes):
 
-        if show_background:
+        h, w = processor.get_gray().shape
 
-            image = cv2.cvtColor(
-                processor.get_gray(),
-                cv2.COLOR_GRAY2BGR
-            )
+        # Белый холст
+        image = np.full((h, w, 3), 255, dtype=np.uint8)
 
-        else:
-
-            image = np.full(
-                (
-                    processor.height(),
-                    processor.width(),
-                    3
-                ),
-                255,
-                dtype=np.uint8
-            )
-
+        # Рисуем заполненные отверстия
         for hole in holes:
 
-            radius = max(
-                1,
-                int(hole.diameter / 2)
-            )
-
-            color = (0, 0, 0)
+            radius = max(1, int(round(hole.diameter / 2)))
 
             cv2.circle(
                 image,
-                (
-                    int(hole.x),
-                    int(hole.y)
-                ),
+                (int(hole.x), int(hole.y)),
                 radius,
-                color,
-                -1
+                (0, 0, 0),
+                -1      # заполненный круг
             )
 
         return image
