@@ -74,12 +74,17 @@ class MainWindow(QMainWindow):
 
         self.bridgeBox = QDoubleSpinBox()
         self.bridgeBox.setValue(2.5)
+        self.gridStepBox = QDoubleSpinBox()
+        self.gridStepBox.setRange(2.0, 10.0)
+        self.gridStepBox.setSingleStep(0.1)
+        self.gridStepBox.setValue(5.0)
 
         form.addRow("Ширина", self.widthBox)
         form.addRow("Высота", self.heightBox)
         form.addRow("Мин Ø", self.minBox)
         form.addRow("Макс Ø", self.maxBox)
         form.addRow("Перемычка", self.bridgeBox)
+        form.addRow("Шаг сетки", self.gridStepBox)
 
         settings.setLayout(form)
 
@@ -136,6 +141,7 @@ class MainWindow(QMainWindow):
         self.minBox.valueChanged.connect(self.generate)
         self.maxBox.valueChanged.connect(self.generate)
         self.bridgeBox.valueChanged.connect(self.generate)
+        self.gridStepBox.valueChanged.connect(self.generate)
     # ======================================
 
     def load_image(self):
@@ -177,6 +183,7 @@ class MainWindow(QMainWindow):
         self.generator.min_diameter = self.minBox.value()
         self.generator.max_diameter = self.maxBox.value()
         self.generator.bridge = self.bridgeBox.value()
+        self.generator.grid_step = self.gridStepBox.value()
 
         holes = self.generator.generate(self.processor)
 

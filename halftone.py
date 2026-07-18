@@ -32,8 +32,7 @@ class HalftoneGenerator:
         points = self.grid.generate(
             processor.width(),
             processor.height(),
-            self.settings.max_diameter,
-            self.settings.bridge,
+            self.settings.grid_step,
         )
 
         for point in points:

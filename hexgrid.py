@@ -14,8 +14,7 @@ class HexGridGenerator:
         self,
         width_mm,
         height_mm,
-        max_diameter,
-        bridge
+        grid_step
     ):
         """
         Возвращает список точек центров отверстий.
@@ -24,7 +23,7 @@ class HexGridGenerator:
         points = []
 
         # Расстояние между центрами отверстий
-        step = max_diameter + bridge
+        step = grid_step
 
         # Высота шестиугольной сетки
         row_height = step * math.sqrt(3) / 2

@@ -25,4 +25,5 @@ class Settings:
     sharpen: bool = False
 
     # Сетка
+    grid_step: float = 5.0
     rotate_grid: float = 0.0
