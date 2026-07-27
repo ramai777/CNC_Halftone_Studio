@@ -27,3 +27,11 @@ class Settings:
     # Сетка
     grid_step: float = 5.0
     rotate_grid: float = 0.0
+
+    preview_pixels_per_mm: int = 2
+    export_pixels_per_mm: int = 10
+
+    # Положение изображения
+    image_scale: float = 1.0
+    offset_x_mm: float = 0.0
+    offset_y_mm: float = 0.0

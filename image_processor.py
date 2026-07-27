@@ -1,12 +1,18 @@
 import cv2
 import numpy as np
 
+from image_transform import ImageTransform
 
 class ImageProcessor:
+    
 
     def __init__(self):
         self.image = None
+
+        self.original_gray = None
         self.gray = None
+
+        self.transform = ImageTransform()
 
     def load(self, filename):
 
@@ -42,7 +48,41 @@ class ImageProcessor:
             0
         )
 
-        self.gray = gray
+        self.original_gray = gray
+        self.gray = gray.copy()
+
+    def resize_to_panel(
+        self,
+        width_mm,
+        height_mm,
+        pixels_per_mm
+    ):
+        """
+        Масштабирует изображение под размер изделия.
+        """
+
+        target_w = int(width_mm * pixels_per_mm)
+        target_h = int(height_mm * pixels_per_mm)
+
+        self.gray = cv2.resize(
+            self.original_gray,
+            (target_w, target_h),
+            interpolation=cv2.INTER_AREA
+        )
+        print("Размер после resize:", self.gray.shape)
+        print("pixels_per_mm =", pixels_per_mm)
+        
+    def transform_image(
+        self,
+        width_px,
+        height_px
+    ):
+        self.gray = self.transform.apply(
+            self.gray,
+            width_px,
+            height_px
+        )
+
 
     def width(self):
         return self.gray.shape[1]

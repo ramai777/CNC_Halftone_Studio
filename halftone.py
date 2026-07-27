@@ -23,24 +23,58 @@ class HalftoneGenerator:
 
     def generate(self, processor):
 
+        print("Старт генерации")
+
         self.clear()
 
         sampler = BrightnessSampler(
             processor.get_gray()
         )
 
+        px_per_mm_x = processor.width() / self.settings.panel_width_mm
+        px_per_mm_y = processor.height() / self.settings.panel_height_mm
+
         points = self.grid.generate(
-            processor.width(),
-            processor.height(),
+            self.settings.panel_width_mm,
+            self.settings.panel_height_mm,
             self.settings.grid_step,
         )
+        print("Точек:", len(points))
+        scale = self.settings.image_scale
+
+        offset_x = self.settings.offset_x_mm
+        offset_y = self.settings.offset_y_mm
+
+        i = 0
 
         for point in points:
 
+            i += 1
+
+            if i % 1000 == 0:
+                print(i)
+
+            sample_x = (
+                (point.x + offset_x)
+                * scale
+                * px_per_mm_x
+            )
+
+            sample_y = (
+                (point.y + offset_y)
+                * scale
+                * px_per_mm_y
+            )
+
             brightness = sampler.sample(
-                point.x,
-                point.y,
-                self.settings.max_diameter
+                sample_x,
+                sample_y,
+                self.settings.max_diameter * px_per_mm_x * scale
+            )
+
+            contrast = sampler.contrast(
+                sample_x,
+                sample_y
             )
 
             diameter = brightness_to_diameter(

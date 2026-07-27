@@ -45,3 +45,25 @@ class BrightnessSampler:
         )
 
         return cv2.mean(roi, mask=mask)[0]
+    def contrast(self, x, y, radius=5):
+        """
+        Возвращает локальный контраст.
+        """
+
+        h, w = self.image.shape
+
+        x = int(round(x))
+        y = int(round(y))
+
+        x1 = max(0, x - radius)
+        y1 = max(0, y - radius)
+
+        x2 = min(w, x + radius + 1)
+        y2 = min(h, y + radius + 1)
+
+        roi = self.image[y1:y2, x1:x2]
+
+        if roi.size == 0:
+            return 0
+
+        return float(roi.std())
